@@ -1,13 +1,23 @@
+import mixin as mixin
 from django.forms import model_to_dict
 from django.shortcuts import render
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 
 from women.models import Women
 from women.serializers import WomenSerializer
 
-class WomenViewSet(viewsets.ModelViewSet):
+#ReadOnlyModelViewSet
+# class WomenViewSet(viewsets.ModelViewSet):
+#можно управлять миксинами. удалять и таким образом ограничивать доступ
+class WomenViewSet(mixins.CreateModelMixin,
+                   mixins.RetriveModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin,
+                   mixins.ListModelMixin,
+                   GenericViewSet):
     queryset = Women.objects.all()
     serializer_class = WomenSerializer
 
