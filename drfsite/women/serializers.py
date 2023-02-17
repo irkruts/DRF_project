@@ -55,6 +55,8 @@ from women.models import Women
 #         instance.save()
 #         return instance
 class WomenSerializer(serializers.ModelSerializer):
+    #
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
         model = Women
         # fields = ('title', 'content', 'cat')

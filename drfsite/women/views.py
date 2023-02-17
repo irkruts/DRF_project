@@ -3,39 +3,41 @@ from django.forms import model_to_dict
 from django.shortcuts import render
 from rest_framework import generics, viewsets, mixins
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from women.models import Women, Category
+from women.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from women.serializers import WomenSerializer
 
 #ReadOnlyModelViewSet
 # class WomenViewSet(viewsets.ModelViewSet):
 #можно управлять миксинами. удалять и таким образом ограничивать доступ
-class WomenViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   GenericViewSet):
-    # queryset = Women.objects.all()
-    serializer_class = WomenSerializer
-
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
-
-        if not pk:
-            return Women.objects.all()[:3]
-
-        return Women.objects.filter(pk=pk)
-
-
-    @action(methods=['get'], detail=True) #если ФОЛС-список, если ТРУС-1 запись
-    def category(self, request, pk=None):
-        cats = Category.objects.get(pk=pk)
-        return Response({'cats': cats.name})
-        # return Response({'cats': [c.name for c in cats]})
+# class WomenViewSet(mixins.CreateModelMixin,
+#                    mixins.RetrieveModelMixin,
+#                    mixins.UpdateModelMixin,
+#                    mixins.DestroyModelMixin,
+#                    mixins.ListModelMixin,
+#                    GenericViewSet):
+#     # queryset = Women.objects.all()
+#     serializer_class = WomenSerializer
+#
+#     def get_queryset(self):
+#         pk = self.kwargs.get('pk')
+#
+#         if not pk:
+#             return Women.objects.all()[:3]
+#
+#         return Women.objects.filter(pk=pk)
+#
+#
+#     @action(methods=['get'], detail=True) #если ФОЛС-список, если ТРУС-1 запись
+#     def category(self, request, pk=None):
+#         cats = Category.objects.get(pk=pk)
+#         return Response({'cats': cats.name})
+#         # return Response({'cats': [c.name for c in cats]})
 
     # @action(methods=['get'], detail=True)
     # def category(self, request, pk=None):
@@ -115,4 +117,21 @@ class WomenViewSet(mixins.CreateModelMixin,
 #     queryset = Women.objects.all()
 #     serializer_class = WomenSerializer
 
+
+
+
+class WomenAPIList(generics.ListCreateAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+
+class WomenAPIUpdate(generics.RetrieveUpdateAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    permission_classes = (IsOwnerOrReadOnly, )
+
+class WomenAPIDestroy(generics.RetrieveDestroyAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    permission_classes = (IsAdminOrReadOnly, )
 
