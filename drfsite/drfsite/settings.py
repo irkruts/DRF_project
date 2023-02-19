@@ -24,7 +24,7 @@ SECRET_KEY = "django-insecure-l-lt)epkec$^g!o7uc2@+6x*p)&kyf%=^+wmg303=^(+2z!u$5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1' ]
 
 # Application definition
 
@@ -36,7 +36,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "women.apps.WomenConfig",
-    "rest_framework"
+
+    "rest_framework",
+    "rest_framework.authtoken",
+    "djoser",
+
 ]
 
 MIDDLEWARE = [
@@ -122,5 +126,15 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ]
 }
